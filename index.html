@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wadi Rum Trip Invitation</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.1.0/dist/index.umd.min.js"></script>
+</head>
+<body>
+
+  <canvas id="fireworksCanvas"></canvas>
+  <div class="emoji-rain" id="emojiRain"></div>
+
+  <section class="hero">
+    <h1>🏜️ Wadi Rum Trip 🐪</h1>
+    <p class="date">May 23–25, 2025</p>
+    <p class="intro">Pack your camel and vibes, it's desert time 🌞🌵💃</p>
+    <div class="emoji-decor">
+      <span class="emoji">🌵</span>
+      <span class="emoji">🐫</span>
+      <span class="emoji">🧃</span>
+    </div>
+  </section>
+
+  <section class="rsvp">
+
+    <h2>🎉😎 Who's coming to the desert party?</h2>
+    <input type="text" id="nameInput" placeholder="Type your legendary name..." />
+    <div class="button-group">
+      <button onclick="rsvp('🎉💃🕺')">I’m so in</button>
+      <button class="evil-button" onclick="notComing()">I’m not coming 😒</button>
+    </div>
+    <div class="dance-party-trigger">
+        <div class="dance-button-container">
+            <button onclick="startDanceParty()" class="dance-button">💃</button>
+          </div>
+    <ul id="guestList"></ul>
+  </section>
+
+  <div class="quiz">
+    <h3>🧠 Desert Trivia – Test Your Skills!</h3>
+
+    <div class="question">
+      <p>1. كم عدد ابل البدوي؟</p>
+      <button onclick="checkAnswer(this, false)">20</button>
+      <button onclick="checkAnswer(this, true, 'correct1')">50</button>
+      <button onclick="checkAnswer(this, false)">يملك ضفدع فقط</button>
+    </div>
+
+    <div class="question">
+      <p>2. ما هو لونها؟</p>
+      <button onclick="checkAnswer(this, false)">برغندي</button>
+      <button onclick="checkAnswer(this, false)">زمردي</button>
+      <button onclick="checkAnswer(this, true, 'correct2')">مغاتير</button>
+    </div>
+
+    <div class="question">
+      <p>3. ماذا يتمنى البدوي؟</p>
+      <button onclick="checkAnswer(this, false)">اكل السوشي</button>
+      <button onclick="checkAnswer(this, false)">شرب الماتشا</button>
+      <button onclick="checkAnswer(this, true, 'correct3')">انه بعير عند ابن قريع</button>
+    </div>
+    <div class="question">
+        <p>4. اكمل بيت الشعر: "عصير راني حبيبات جايه...."</p>
+        <button onclick="checkAnswer(this, false)">ودك تاكل ودك تشرب</button>
+        <button onclick="checkAnswer(this, false)">تشرب ودك ودك تاكل</button>
+        <button onclick="checkAnswer(this, true, 'correct4')">ودك تشرب ودك تاكل</button>
+      </div>
+      
+      <div class="question">
+        <p>5.ما هو اسم الشاعر المخضرم قائل الابيات السابقة؟</p>
+        <button onclick="checkAnswer(this, false)">اسمحلي</button>
+        <button onclick="checkAnswer(this, true, 'correct5', true)">السحلي</button>
+        <button onclick="checkAnswer(this, false)">اشلحلي</button>
+      </div>
+      
+  </div>
+  <img id="prizeImage" src="prize.png" alt="Grand Prize" class="hidden-prize" />
+ 
+  <div class="spin-wrapper">
+    <div class="wheel-container">
+      <canvas id="spinnerCanvas" width="700" height="700"></canvas>
+      <button id="spinBtn" class="spin-btn" onclick="spin()">جائزة أروع الرائعين 🎁</button>
+    </div>
+    <div id="result" class="result-message"></div>
+  
+    <!-- Audio files -->
+    <audio id="spinSound" src="spin.mp3"></audio> 
+    <audio id="winSound" src="yay.mp3"></audio> 
+  </div>
+  
+  
+  <footer>
+    <p>🐫 Don’t forget sunscreen... and your best desert dance moves 💃🕺 </p>
+  </footer>
+
+  <!-- 🔊 SOUND ELEMENTS -->
+  <audio id="faselSound" src="wrong.wav"></audio>
+  <audio id="correct1" src="50.mp3"></audio>
+  <audio id="correct2" src="color.mp3"></audio>
+  <audio id="correct3" src="wish.mp3"></audio>
+  <audio id="correct4" src="rani.mp3"></audio>
+<audio id="correct5" src="winner.mp3"></audio>
+
+
+  <script>
+    const fireworksCanvas = document.getElementById('fireworksCanvas');
+    const emojiRain = document.getElementById('emojiRain');
+    const guestList = document.getElementById('guestList');
+    const nameInput = document.getElementById('nameInput');
+
+    const shokranSound = new Audio('shokran.mp3');
+    const faselSound = new Audio('fasel.mp3');
+
+    const fireworks = new Fireworks.default(fireworksCanvas, {
+      hue: { min: 0, max: 360 },
+      delay: { min: 15, max: 30 },
+      rocketsPoint: { min: 20, max: 80 },
+      speed: 1,
+      acceleration: 1.05,
+      friction: 0.95,
+      gravity: 1.5,
+      particles: 90,
+      trace: 3,
+      explosion: 8,
+      autoresize: true
+    });
+
+    function rsvp(message) {
+      const name = nameInput.value.trim();
+      if (!name) {
+        alert("Enter your name first, desert warrior! 🏜️🐫");
+        return;
+      }
+      shokranSound.play();
+      const li = document.createElement('li');
+      li.textContent = `🎉 ${name} is in! (${message})`;
+      li.classList.add('bounce');
+      guestList.appendChild(li);
+      nameInput.value = '';
+
+      fireworks.start();
+      setTimeout(() => fireworks.stop(), 5000);
+    }
+
+    function notComing() {
+      faselSound.play();
+      emojiRain.innerHTML = '';
+      for (let i = 0; i < 50; i++) {
+        const emoji = document.createElement('span');
+        emoji.textContent = ['😢','🥺','😭','💔'][Math.floor(Math.random() * 4)];
+        emoji.classList.add('sad-emoji');
+        emoji.style.left = `${Math.random() * 100}vw`;
+        emoji.style.animationDuration = `${Math.random() * 2 + 2}s`;
+        emojiRain.appendChild(emoji);
+      }
+      setTimeout(() => {
+        alert("😈 You’re COMING. There’s no escape from the desert fun.");
+        emojiRain.innerHTML = '';
+      }, 4000);
+    }
+    function checkAnswer(button, isCorrect, correctSoundId = null, isFinal = false) {
+  if (isCorrect) {
+    if (correctSoundId) {
+      const correctSound = document.getElementById(correctSoundId);
+      correctSound?.play();
+    }
+    fireworks.start();
+    setTimeout(() => fireworks.stop(), 3000);
+    button.style.backgroundColor = '#4CAF50';
+
+    if (isFinal) {
+      const prizeImg = document.getElementById('prizeImage');
+      prizeImg.classList.add('show');
+      setTimeout(() => {
+        prizeImg.classList.remove('show');
+      }, 7000);
+    }
+
+  } else {
+    document.getElementById('faselSound').play();
+    sadEffect();
+    button.style.backgroundColor = '#f44336';
+  }
+}
+
+
+
+
+    function sadEffect() {
+      emojiRain.innerHTML = '';
+      for (let i = 0; i < 40; i++) {
+        const emoji = document.createElement('span');
+        emoji.textContent = ['😢','🥺','😭','💔'][Math.floor(Math.random() * 4)];
+        emoji.classList.add('sad-emoji');
+        emoji.style.left = `${Math.random() * 100}vw`;
+        emoji.style.animationDuration = `${Math.random() * 2 + 2}s`;
+        emojiRain.appendChild(emoji);
+      }
+      setTimeout(() => {
+        emojiRain.innerHTML = '';
+      }, 4000);
+    }
+    const danceSound = new Audio('dance.mp3');
+
+    function startDanceParty() {
+  const waveCount = 10;
+  const emojisPerWave = 70;
+  const totalEmojis = waveCount * emojisPerWave;
+
+  danceSound.play();
+
+  let wave = 0;
+
+  const interval = setInterval(() => {
+    for (let i = 0; i < emojisPerWave; i++) {
+      const emoji = document.createElement('span');
+      emoji.textContent = ['💃', '🕺', '🪩'][Math.floor(Math.random() * 3)];
+      emoji.classList.add('dance-emoji');
+      emoji.style.left = `calc(${(i / emojisPerWave) * 100}% + ${Math.random() * 10 - 5}px)`;
+      emoji.style.fontSize = `${Math.random() * 1.5 + 2.5}rem`;
+      emoji.style.animationDelay = `${Math.random() * 1}s`;
+
+      document.body.appendChild(emoji);
+
+      setTimeout(() => {
+        emoji.remove();
+      }, 5000); // 10s = match animation duration
+    }
+
+    wave++;
+    if (wave >= waveCount) {
+      clearInterval(interval);
+    }
+  }, 1000); // new wave every second
+}
+  const canvas = document.getElementById("spinnerCanvas");
+  const ctx = canvas.getContext("2d");
+
+  const options = [
+    "العروسة",
+    "العريس",
+    "ملكة العالم والعوالم كلها سوسو",
+    "الاميرة ديانا",
+    "الحلوة يارا",
+    "ملك البادية وما حولها مظفر",
+    "دينا مندلينا",
+    "حسنيتوو حسن",
+    "بشاريتو بشار",
+    "ساشا مبارك"
+  ];
+  const segmentAngle = (2 * Math.PI) / options.length;
+  let rotation = 0;
+
+  const spinSound = document.getElementById("spinSound");
+  const winSound = document.getElementById("winSound");
+
+  function drawWheel() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const radius = canvas.width / 2;
+
+  options.forEach((option, i) => {
+    const startAngle = i * segmentAngle + rotation;
+    const endAngle = startAngle + segmentAngle;
+    ctx.beginPath();
+    ctx.moveTo(radius, radius);
+    ctx.arc(radius, radius, radius, startAngle, endAngle);
+    ctx.fillStyle = i % 2 === 0 ? "#f7c59f" : "#fbeec1";
+    ctx.fill();
+    ctx.stroke();
+
+    // Add text
+    ctx.save();
+    ctx.translate(radius, radius);
+    ctx.rotate(startAngle + segmentAngle / 2);
+    ctx.textAlign = "right";
+    ctx.fillStyle = "#333";
+    ctx.font = "bold 24px Arial"; // ⬅️ Increase font size here!
+    ctx.fillText(option, radius - 30, 10); // ⬅️ Move text closer to the edge
+    ctx.restore();
+  });
+}
+
+
+  drawWheel();
+
+  function spin() {
+    const resultBox = document.getElementById("result");
+    resultBox.classList.remove("show");
+
+    spinSound.currentTime = 0;
+    spinSound.play();
+
+    const winnerIndex = Math.random() < 0.5 ? 2 : 5;
+const winnerName = options[winnerIndex];
+const spins = 5;
+const anglePerOption = 360 / options.length;
+const stopAngle = 360 - (winnerIndex + 0.5) * anglePerOption;
+const totalRotation = spins * 360 + stopAngle;
+resultBox.textContent = `🎉 ${winnerName}!`;
+
+    let start = null;
+    const duration = 4000;
+    const initialRotation = rotation;
+
+    function animate(timestamp) {
+      if (!start) start = timestamp;
+      const elapsed = timestamp - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 4); // ease-out
+      rotation = (initialRotation + eased * totalRotation * Math.PI / 180) % (2 * Math.PI);
+      drawWheel();
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        // Show result
+        resultBox.textContent = `🎉 ${winnerName}! 🎉`;
+        resultBox.classList.add("show");
+
+
+        winSound.currentTime = 0;
+        winSound.play();
+        fireworks.start();
+startDanceParty();
+setTimeout(() => fireworks.stop(), 5000); 
+
+        setTimeout(() => {
+          resultBox.classList.remove("show");
+        }, 3000);
+      }
+    }
+
+    requestAnimationFrame(animate);
+    if (progress < 1) {
+  requestAnimationFrame(animate);
+} else {
+  // Show result
+  resultBox.textContent = `🎉 ${winnerName}! 🎉`;
+  resultBox.classList.add("show");
+
+  winSound.currentTime = 0;
+  winSound.play();
+
+  setTimeout(() => {
+    resultBox.classList.remove("show");
+  }, 4000);
+}
+
+  }
+
+
+  </script>
+</body>
+</html>
+
+
+
+
